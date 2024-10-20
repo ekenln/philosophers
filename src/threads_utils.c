@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/17 17:27:32 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 16:16:27 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/20 17:04:16 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,20 +16,16 @@ int	philo_is_dead(t_philo *philos)
 {
 	int		i;
 	size_t	last_meal;
-	size_t 	current_time;
-	bool	dead;
+	size_t	current_time;
 
 	i = 0;
 	while (i < philos->data->num_of_philos)
 	{
-		pthread_mutex_lock(&philos->data->dead_lock);
-		dead = philos->data->dead;
-		if (dead)
+		if (!all_philos_alive(philos))
 		{
 			pthread_mutex_unlock(&philos->data->dead_lock);
 			return (1);
 		}
-		pthread_mutex_unlock(&philos->data->dead_lock);
 		pthread_mutex_lock(&philos->data->eat_lock);
 		last_meal = philos[i].last_meal;
 		current_time = get_time();
@@ -52,8 +48,9 @@ int	all_philos_alive(t_philo *philo)
 	bool	dead;
 
 	dead = false;
-	apply_mutx_bool(&philo->data->dead_lock, \
-	&dead, philo->data->dead);
+	pthread_mutex_lock(&philo->data->dead_lock);
+	dead = philo->data->dead;
+	pthread_mutex_unlock(&philo->data->dead_lock);
 	if (dead == true)
 		return (0);
 	return (1);

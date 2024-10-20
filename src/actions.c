@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:43:53 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 16:14:56 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/20 16:42:27 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 
 void	grab_forks(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec)
 {
+	ft_usleep(1);
 	pthread_mutex_lock(fir);
 	print_message(TAKE_FORKS, philo);
 	pthread_mutex_lock(sec);
@@ -42,32 +43,22 @@ void	drop_forks(t_philo *philo)
 
 int	eating(t_philo *philo)
 {
-	bool	dead;
-
-	dead = false;
-	apply_mutx_bool(&philo->data->dead_lock, \
-	&dead, philo->data->dead);
-	if (dead == true)
-	{
-		drop_forks(philo);
+	if (!all_philos_alive(philo))
 		return (0);
-	}
 	if (philo->type == 0)
 		grab_forks(philo, philo->fork_left, philo->fork_right);
 	else
 		grab_forks(philo, philo->fork_right, philo->fork_left);
-	apply_mutx(&philo->data->eat_lock, &philo->last_meal, get_time());
-	apply_mutx_bool(&philo->data->dead_lock, \
-	&dead, philo->data->dead);
-	if (dead == true)
+	if (!all_philos_alive(philo))
 	{
 		drop_forks(philo);
 		return (0);
 	}
-	print_message(EATING, philo);
 	pthread_mutex_lock(&philo->data->eat_lock);
-	philo->meals_eaten += 1;
+	philo->last_meal = get_time();
+	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->data->eat_lock);
+	print_message(EATING, philo);
 	ft_usleep(philo->data->time_to_eat);
 	drop_forks(philo);
 	return (1);

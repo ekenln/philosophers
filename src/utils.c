@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:11:55 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 16:01:11 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/20 17:10:00 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,15 +39,13 @@ int	print_message(char *str, t_philo *philo)
 	bool	anyone_dead;
 
 	timestamp = get_time() - philo->data->start_time;
-	apply_mutx_bool(&philo->data->dead_lock, \
-	&anyone_dead, philo->data->dead);
+	pthread_mutex_lock(&philo->data->dead_lock);
+	anyone_dead = philo->data->dead;
+	pthread_mutex_unlock(&philo->data->dead_lock);
+	// apply_mutx_bool(&philo->data->dead_lock, 
+	// &anyone_dead, philo->data->dead);
 	if (!ft_strncmp(DIED, str))
-	{
-		// print_safe(philo, timestamp, philo->num, str);
-		printf("%lu %i %s, last meal: %lu, current time: %lu\n", \
-		timestamp, philo->num, str, philo->last_meal - philo->data->start_time,\
-		get_time() - philo->data->start_time);
-	}
+		print_safe(philo, timestamp, philo->num, str);
 	else
 	{
 		if (anyone_dead == false)
