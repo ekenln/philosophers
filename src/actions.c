@@ -6,19 +6,30 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:43:53 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 16:42:27 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 11:14:57 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	grab_forks(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec)
+//4 200 205 200
+//105 800 200 200
+//200 800 200 200
+
+int	grab_forks(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec)
 {
-	ft_usleep(1);
 	pthread_mutex_lock(fir);
 	print_message(TAKE_FORKS, philo);
+	// if (philo->data->num_of_philos == 1)
+	// {
+	// 	ft_usleep(philo->data->time_to_die);
+	// 	pthread_mutex_unlock(fir);
+	// 	printf("HELLOOOO\n");
+	// 	return (0);
+	// }
 	pthread_mutex_lock(sec);
 	print_message(TAKE_FORKS, philo);
+	return (1);
 }
 
 void	drop_forks_even(t_philo *philo)
@@ -43,12 +54,19 @@ void	drop_forks(t_philo *philo)
 
 int	eating(t_philo *philo)
 {
+	int	res;
+
 	if (!all_philos_alive(philo))
 		return (0);
 	if (philo->type == 0)
-		grab_forks(philo, philo->fork_left, philo->fork_right);
+		res = grab_forks(philo, philo->fork_left, philo->fork_right);
 	else
-		grab_forks(philo, philo->fork_right, philo->fork_left);
+	{
+		ft_usleep(philo->data->time_to_eat / 2);
+		res = grab_forks(philo, philo->fork_right, philo->fork_left);
+	}
+	if (!res)
+		return (0);
 	if (!all_philos_alive(philo))
 	{
 		drop_forks(philo);

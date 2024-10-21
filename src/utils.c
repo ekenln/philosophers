@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:11:55 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 17:10:00 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 11:07:32 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int	ft_usleep(size_t millisecs)
 
 	start = get_time();
 	while (get_time() - start < millisecs)
-		usleep(500);
+		usleep(100);
 	return (0);
 }
 

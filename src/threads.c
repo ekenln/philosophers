@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:00:54 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 17:08:37 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 11:12:51 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ void	monitor(t_data *data)
 	pthread_mutex_unlock(&data->start_lock);
 	while (1)
 	{
+		ft_usleep(1000);
 		if (philo_is_dead(data->philos) || (data->meals_limit && all_fed(data)))
 			return ;
 	}
@@ -38,6 +39,14 @@ void	routine(void *philo_ptr)
 		ready = philo->data->philos_ready;
 		pthread_mutex_unlock(&philo->data->start_lock);
 	}
+    // pthread_mutex_lock(&philo->data->start_lock);
+    // while (!philo->data->philos_ready)
+    // {
+    //     pthread_mutex_unlock(&philo->data->start_lock);
+    //     usleep(100);
+    //     pthread_mutex_lock(&philo->data->start_lock);
+    // }
+    // pthread_mutex_unlock(&philo->data->start_lock);
 	apply_mutx(&philo->data->eat_lock, &philo->last_meal, \
 	philo->data->start_time);
 	while (all_philos_alive(philo))
