@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:43:53 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/21 11:14:57 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 19:21:25 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,6 @@ int	grab_forks(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec)
 {
 	pthread_mutex_lock(fir);
 	print_message(TAKE_FORKS, philo);
-	// if (philo->data->num_of_philos == 1)
-	// {
-	// 	ft_usleep(philo->data->time_to_die);
-	// 	pthread_mutex_unlock(fir);
-	// 	printf("HELLOOOO\n");
-	// 	return (0);
-	// }
 	pthread_mutex_lock(sec);
 	print_message(TAKE_FORKS, philo);
 	return (1);

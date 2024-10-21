@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:11:55 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/21 11:07:32 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 19:39:42 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,13 +66,29 @@ size_t	get_time(void)
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
 }
 
+// int	ft_usleep(size_t millisecs)
+// {
+// 	size_t	start;
+
+// 	start = get_time();
+// 	while (get_time() - start < millisecs)
+// 		usleep(100);
+// 	return (0);
+// }
+
 int	ft_usleep(size_t millisecs)
 {
-	size_t	start;
+	// size_t	half;
+	size_t	target_time;
 
-	start = get_time();
-	while (get_time() - start < millisecs)
-		usleep(100);
+	target_time = get_time() + millisecs;
+	// half = millisecs / 2;
+	// usleep(half);
+	usleep((millisecs * 950) / 1000);
+	while (get_time() < target_time)
+	{
+		usleep(500);
+	}
 	return (0);
 }
 

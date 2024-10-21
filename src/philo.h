@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/13 15:51:47 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 16:01:25 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 19:21:33 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ int		start_threads(t_data *data);
 /* actions */
 void	grab_forks_even(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec);
 void	grab_forks_odd(t_philo *philo);
-void	drop_forks(t_philo *philo);
 void	drop_forks_even(t_philo *philo);
 void	drop_forks_odd(t_philo *philo);
 int		eating(t_philo *philo);

@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:00:54 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/21 11:12:51 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/21 19:09:01 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,11 @@ void	routine(void *philo_ptr)
 {
 	t_philo	*philo;
 	bool	ready;
+	int		waiting;
 
 	philo = (t_philo *)philo_ptr;
 	ready = false;
+	waiting = philo->data->time_to_eat / 2;
 	while (ready == false)
 	{
 		pthread_mutex_lock(&philo->data->start_lock);
@@ -49,6 +51,8 @@ void	routine(void *philo_ptr)
     // pthread_mutex_unlock(&philo->data->start_lock);
 	apply_mutx(&philo->data->eat_lock, &philo->last_meal, \
 	philo->data->start_time);
+	if (philo->type == 1)
+		ft_usleep(waiting);
 	while (all_philos_alive(philo))
 	{
 		if (philo->data->meals_limit && all_fed(philo->data))
@@ -62,11 +66,42 @@ void	routine(void *philo_ptr)
 	}
 }
 
+void	handle_one_philo(void *philo_ptr)
+{
+	t_philo	*philo;
+
+	philo = (t_philo *)philo_ptr;
+	pthread_mutex_lock(philo->fork_left);
+	print_message(TAKE_FORKS, philo);
+	ft_usleep(philo->data->time_to_die);
+	pthread_mutex_unlock(philo->fork_left);
+	print_message(DIED, philo);
+}
+
+void	end_simulation(t_data *data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data->num_of_philos)
+	{
+		pthread_join(data->threads[i], NULL);
+		i++;
+	}
+}
+
 int	start_threads(t_data *data)
 {
 	int	i;
 
 	i = 0;
+	if (data->num_of_philos == 1)
+	{
+		if (pthread_create(&data->threads[i], NULL, (void *)handle_one_philo, \
+		(void *)&data->philos[i]) != 0)
+			return (destroy_all(data));
+		return (end_simulation(data), 1);
+	}
 	while (i < data->num_of_philos)
 	{
 		if (pthread_create(&data->threads[i], NULL, (void *)routine, \
@@ -76,10 +111,27 @@ int	start_threads(t_data *data)
 	}
 	i = 0;
 	monitor(data);
-	while (i < data->num_of_philos)
-	{
-		pthread_join(data->threads[i], NULL);
-		i++;
-	}
-	return (1);
+	return (end_simulation(data), 1);
 }
+
+// int	start_threads(t_data *data)
+// {
+// 	int	i;
+
+// 	i = 0;
+// 	while (i < data->num_of_philos)
+// 	{
+// 		if (pthread_create(&data->threads[i], NULL, (void *)routine, \
+// 		(void *)&data->philos[i]) != 0)
+// 			return (destroy_all(data));
+// 		i++;
+// 	}
+// 	i = 0;
+// 	monitor(data);
+// 	while (i < data->num_of_philos)
+// 	{
+// 		pthread_join(data->threads[i], NULL);
+// 		i++;
+// 	}
+// 	return (1);
+// }
