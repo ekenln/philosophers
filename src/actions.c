@@ -6,7 +6,7 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/14 16:43:53 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/21 19:21:25 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/23 18:35:42 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,17 @@ int	grab_forks(t_philo *philo, pthread_mutex_t *fir, pthread_mutex_t *sec)
 	print_message(TAKE_FORKS, philo);
 	pthread_mutex_lock(sec);
 	print_message(TAKE_FORKS, philo);
+	return (1);
+}
+
+int	grab_forks_same(t_philo *philo)
+{
+	pthread_mutex_lock(philo->fork_left);
+	if (all_philos_alive(philo))
+		print_message(TAKE_FORKS, philo);
+	pthread_mutex_lock(philo->fork_right);
+	if (all_philos_alive(philo))
+		print_message(TAKE_FORKS, philo);
 	return (1);
 }
 
@@ -47,30 +58,28 @@ void	drop_forks(t_philo *philo)
 
 int	eating(t_philo *philo)
 {
-	int	res;
+	// int	res;
 
-	if (!all_philos_alive(philo))
-		return (0);
-	if (philo->type == 0)
-		res = grab_forks(philo, philo->fork_left, philo->fork_right);
-	else
-	{
-		ft_usleep(philo->data->time_to_eat / 2);
-		res = grab_forks(philo, philo->fork_right, philo->fork_left);
-	}
-	if (!res)
-		return (0);
-	if (!all_philos_alive(philo))
-	{
-		drop_forks(philo);
-		return (0);
-	}
+	// if (philo->type == 0)
+	// 	res = grab_forks(philo, philo->fork_left, philo->fork_right);
+	// else
+	// {
+		// ft_usleep(philo->data->time_to_eat / 2);
+	grab_forks_same(philo);
+	// }
+	// if (!res)
+	// 	return (0);
+	// if (!all_philos_alive(philo))
+	// {
+	// 	drop_forks(philo);
+	// 	return (0);
+	// }
 	pthread_mutex_lock(&philo->data->eat_lock);
 	philo->last_meal = get_time();
 	philo->meals_eaten++;
 	pthread_mutex_unlock(&philo->data->eat_lock);
 	print_message(EATING, philo);
 	ft_usleep(philo->data->time_to_eat);
-	drop_forks(philo);
+	drop_forks_odd(philo);
 	return (1);
 }
