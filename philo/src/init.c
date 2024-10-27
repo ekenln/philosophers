@@ -6,13 +6,13 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/10/05 19:15:18 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/23 19:27:45 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/26 14:13:15 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	allocation(t_data *data, int num_of_philos)
+static int	allocation(t_data *data, int num_of_philos)
 {
 	data->philos = malloc (num_of_philos * sizeof(t_philo));
 	if (!data->philos)
@@ -20,13 +20,13 @@ int	allocation(t_data *data, int num_of_philos)
 	data->threads = malloc(num_of_philos * sizeof(pthread_t));
 	if (!data->threads)
 		return (destroy_all(data));
-	data->forks = malloc (num_of_philos * sizeof(pthread_mutex_t));
+	data->forks = malloc (num_of_philos * sizeof(t_mutex));
 	if (!data->forks)
 		return (destroy_all(data));
 	return (1);
 }
 
-int	init_forks(t_data *data, int n)
+static int	init_forks(t_data *data, int n)
 {
 	int	i;
 
@@ -40,16 +40,16 @@ int	init_forks(t_data *data, int n)
 	return (1);
 }
 
-int	init_data(t_data *data, char **input, int num)
+static int	init_data(t_data *data, char **input, int num)
 {
 	data->num_of_philos = num;
 	data->time_to_die = ft_atoi(input[2]);
 	data->time_to_eat = ft_atoi(input[3]);
 	data->time_to_sleep = ft_atoi(input[4]);
-	data->meals_limit = 0;
+	data->meals_limit = -1;
 	if (input[5])
 		data->meals_limit = ft_atoi(input[5]);
-	data->start_time = get_time();
+	data->start_time = 0;
 	if (data->start_time == (size_t)-1)
 		return (-1);
 	data->philos_ready = false;
@@ -65,7 +65,7 @@ int	init_data(t_data *data, char **input, int num)
 	return (1);
 }
 
-void	init_philos(t_data *data, char **input)
+static void	init_philos(t_data *data, char **input)
 {
 	int	i;
 	int	num_of_philos;

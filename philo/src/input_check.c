@@ -6,13 +6,13 @@
 /*   By: eeklund <eeklund@student.42.fr>              +#+                     */
 /*                                                   +#+                      */
 /*   Created: 2024/06/13 18:09:33 by eeklund       #+#    #+#                 */
-/*   Updated: 2024/10/20 12:25:16 by eeklund       ########   odam.nl         */
+/*   Updated: 2024/10/26 14:19:30 by eeklund       ########   odam.nl         */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	ft_isdigit(int c)
+static int	ft_isdigit(int c)
 {
 	if (c >= '0' && c <= '9')
 		return (1);
@@ -24,8 +24,11 @@ int	input_ok(int ac, char **av)
 	int		i;
 	int		j;
 
-	if (ac != 5 && ac !=6)
+	if (ac != 5 && ac != 6)
+	{
+		printf("\033[31;1mFour/five arguments needed\033[0m\n");
 		return (0);
+	}
 	i = 1;
 	while (av[i])
 	{
@@ -34,7 +37,7 @@ int	input_ok(int ac, char **av)
 		{
 			if (!ft_isdigit(av[i][j]))
 			{
-				printf("Wrong input, only numeric chars are allowed\n");
+				printf("\033[31;1mOnly numeric chars are allowed\033[0m\n");
 				return (0);
 			}
 			j++;
@@ -44,33 +47,27 @@ int	input_ok(int ac, char **av)
 	return (1);
 }
 
-void	destroy_forks(pthread_mutex_t *forks, int num_of_forks)
+long	ft_atoi(const char *nptr)
 {
-	int	i;
+	int		i;
+	long	res;
+	int		sign;
 
 	i = 0;
-	while (i < num_of_forks)
+	res = 0;
+	sign = 1;
+	while ((nptr[i] >= 9 && nptr[i] <= 13) || nptr[i] == 32)
+		i++;
+	if (nptr[i] == '-' || nptr[i] == '+')
 	{
-		pthread_mutex_destroy(&forks[i]);
+		if (nptr[i] == '-')
+			sign = -sign;
 		i++;
 	}
-	free(forks);
-	forks = NULL;
-}
-
-int	destroy_all(t_data *data)
-{
-	if (data->forks)
-		destroy_forks(data->forks, data->num_of_philos);
-	if (data->philos)
+	while (nptr[i] >= '0' && nptr[i] <= '9')
 	{
-		free(data->philos);
-		data->philos = NULL;
+		res = res * 10 + nptr[i] - '0';
+		i++;
 	}
-	if (data->threads)
-	{
-		free(data->threads);
-		data->threads = NULL;
-	}
-	return (0);
+	return (res * sign);
 }
